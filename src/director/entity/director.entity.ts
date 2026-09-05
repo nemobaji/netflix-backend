@@ -1,8 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Movie } from '../../movie/entity/movie.entity';
+import { BaseTable } from '../../common/entity/base-table.entity';
 
 @Entity()
-export class Director {
+export class Director extends BaseTable {
   @PrimaryGeneratedColumn()
   id: number;
 
