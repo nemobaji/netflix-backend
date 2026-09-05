@@ -16,6 +16,6 @@ export class Movie extends BaseTable {
   @Column()
   detail: string;
 
-  @ManyToOne(() => Director, (director) => director.id, { cascade: true })
+  @ManyToOne(() => Director, (director) => director.id)
   director: Director;
 }
