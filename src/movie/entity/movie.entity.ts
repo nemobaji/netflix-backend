@@ -7,7 +7,7 @@ export class Movie extends BaseTable {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   title: string;
 
   @Column()
@@ -16,6 +16,6 @@ export class Movie extends BaseTable {
   @Column()
   detail: string;
 
-  @ManyToOne(() => Director, (director) => director.id)
+  @ManyToOne(() => Director, (director) => director.id, { nullable: false })
   director: Director;
 }
