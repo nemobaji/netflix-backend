@@ -6,6 +6,8 @@ import * as Joi from 'joi';
 import { Movie } from './movie/entity/movie.entity';
 import { DirectorModule } from './director/director.module';
 import { Director } from './director/entity/director.entity';
+import { GenreModule } from './genre/genre.module';
+import { Genre } from './genre/entity/genre.entity';
 
 @Module({
   imports: [
@@ -29,13 +31,14 @@ import { Director } from './director/entity/director.entity';
         username: configService.getOrThrow<string>('DB_USERNAME'),
         password: configService.getOrThrow<string>('DB_PASSWORD'),
         database: configService.getOrThrow<string>('DB_DATABASE'),
-        entities: [Movie, Director],
+        entities: [Movie, Director, Genre],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
     MovieModule,
     DirectorModule,
+    GenreModule,
   ],
   controllers: [],
   providers: [],
