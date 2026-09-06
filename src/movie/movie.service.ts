@@ -17,14 +17,20 @@ export class MovieService {
 
   findAll(title?: string) {
     if (!title) {
-      return this.movieRepository.find();
+      return this.movieRepository.find({ relations: { director: true } });
     }
 
-    return this.movieRepository.find({ where: { title: Like(`%${title}%`) } });
+    return this.movieRepository.find({
+      where: { title: Like(`%${title}%`) },
+      relations: { director: true },
+    });
   }
 
   async findOne(id: number) {
-    const movie = await this.movieRepository.findOne({ where: { id } });
+    const movie = await this.movieRepository.findOne({
+      where: { id },
+      relations: { director: true },
+    });
     return movie;
   }
 
