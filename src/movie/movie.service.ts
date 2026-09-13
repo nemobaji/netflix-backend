@@ -3,7 +3,7 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Movie } from './entity/movie.entity';
-import { DataSource, In, Like, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Director } from '../director/entity/director.entity';
 import { Genre } from '../genre/entity/genre.entity';
 
@@ -16,7 +16,6 @@ export class MovieService {
     private readonly directorRepository: Repository<Director>,
     @InjectRepository(Genre)
     private readonly genreRepository: Repository<Genre>,
-    private readonly dataSource: DataSource,
   ) {}
 
   async findAll(title?: string) {
