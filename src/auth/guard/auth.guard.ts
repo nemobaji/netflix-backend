@@ -1,7 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { TokenType } from '../type/token.type';
+import { TokenType } from '../../types/token';
 import { Reflector } from '@nestjs/core';
 import { Public } from '../decorator/public.decorater';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -14,9 +15,10 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    // 요청에서 user 객체가 유효한지 검증
-    const request = context.switchToHttp().getRequest();
-    if (!request || request.type !== TokenType.ACCESS) {
+    // 요청에서 payload 객체가 유효한지 검증
+    const req = context.switchToHttp().getRequest<Request>();
+    const payload = req.payload;
+    if (!payload || payload.type !== TokenType.ACCESS) {
       return false;
     }
     return true;

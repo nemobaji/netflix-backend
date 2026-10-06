@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { NextFunction, Request, Response } from 'express';
 import { envVariableKeys } from '../../common/const/env.const';
+import { JwtPayload } from '../../types/jwt-payload';
 
 @Injectable()
 export class BearerTokenMiddleware implements NestMiddleware {
@@ -17,15 +18,15 @@ export class BearerTokenMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
+    // authHeader: 'Bearer $token'
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
       next();
       return;
     }
-    // authHeader: 'Bearer $token'
-    const token = this.validateBearerToken(authHeader);
 
     try {
+      const token = this.validateBearerToken(authHeader);
       const decodedPayload = this.jwtService.decode(token);
       if (
         decodedPayload.type !== 'access' &&
@@ -37,16 +38,19 @@ export class BearerTokenMiddleware implements NestMiddleware {
         decodedPayload.type === 'refresh'
           ? envVariableKeys.refreshTokenSecret
           : envVariableKeys.accessTokenSecret;
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.getOrThrow<string>(secretKey),
-      });
-      req.user = payload;
+      const payload: JwtPayload = await this.jwtService.verifyAsync<JwtPayload>(
+        token,
+        {
+          secret: this.configService.getOrThrow<string>(secretKey),
+        },
+      );
+      req.payload = payload;
       next();
     } catch (e) {
-      if (e instanceof BadRequestException) {
-        throw e;
+      if (e instanceof Error && e.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('토큰이 만료되었습니다.');
       }
-      throw new UnauthorizedException('토큰이 만료되었습니다');
+      next();
     }
   }
 

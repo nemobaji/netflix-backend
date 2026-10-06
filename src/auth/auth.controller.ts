@@ -1,6 +1,6 @@
 import { Controller, Headers, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { TokenType } from './type/token.type';
+import { TokenType } from '../types/token';
 import { Public } from './decorator/public.decorater';
 
 @Controller('auth')
@@ -19,6 +19,7 @@ export class AuthController {
     return this.authService.login(token);
   }
 
+  @Public()
   @Post('token/access')
   async rotateAccessToken(@Headers('authorization') token: string) {
     const payload = await this.authService.parseBearerToken(

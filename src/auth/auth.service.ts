@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { envVariableKeys } from '../common/const/env.const';
-import { TokenType } from './type/token.type';
+import { TokenType } from '../types/token';
 
 @Injectable()
 export class AuthService {
