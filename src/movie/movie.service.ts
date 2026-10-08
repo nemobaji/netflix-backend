@@ -6,6 +6,7 @@ import { Movie } from './entity/movie.entity';
 import { In, Repository } from 'typeorm';
 import { Director } from '../director/entity/director.entity';
 import { Genre } from '../genre/entity/genre.entity';
+import { GetMoviesDto } from './dto/get-movies.dto';
 
 @Injectable()
 export class MovieService {
@@ -18,8 +19,10 @@ export class MovieService {
     private readonly genreRepository: Repository<Genre>,
   ) {}
 
-  async findAll(title?: string) {
-    const qb = await this.movieRepository
+  async findAll(dto: GetMoviesDto) {
+    const { title, page, take } = dto;
+    console.log(page, take);
+    const qb = this.movieRepository
       .createQueryBuilder('movie')
       .leftJoinAndSelect('movie.director', 'director')
       .leftJoinAndSelect('movie.genres', 'genres');
@@ -27,6 +30,9 @@ export class MovieService {
     if (title) {
       qb.where('movie.title LIKE :title', { title: `%${title}%` });
     }
+
+    const skip = (page - 1) * take;
+    qb.orderBy('movie.id', 'DESC').take(take).skip(skip);
 
     return qb.getManyAndCount();
   }

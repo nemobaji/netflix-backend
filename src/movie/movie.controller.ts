@@ -18,6 +18,7 @@ import { MovieQueryDto } from './dto/movie-query.dto';
 import { Public } from '../auth/decorator/public.decorater';
 import { RBAC } from '../auth/decorator/rbac.decorater';
 import { Role } from '../user/entity/user.entity';
+import { GetMoviesDto } from './dto/get-movies.dto';
 
 @Controller('movie')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -32,8 +33,8 @@ export class MovieController {
 
   @Public()
   @Get()
-  findAll(@Query() query: MovieQueryDto) {
-    return this.movieService.findAll(query.title);
+  findAll(@Query() dto: GetMoviesDto) {
+    return this.movieService.findAll(dto);
   }
 
   @Public()
