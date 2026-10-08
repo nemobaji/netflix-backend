@@ -14,7 +14,6 @@ import {
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { MovieQueryDto } from './dto/movie-query.dto';
 import { Public } from '../auth/decorator/public.decorater';
 import { RBAC } from '../auth/decorator/rbac.decorater';
 import { Role } from '../user/entity/user.entity';

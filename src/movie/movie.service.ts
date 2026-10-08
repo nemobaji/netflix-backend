@@ -20,8 +20,7 @@ export class MovieService {
   ) {}
 
   async findAll(dto: GetMoviesDto) {
-    const { title, page, take } = dto;
-    console.log(page, take);
+    const { order, id, title } = dto;
     const qb = this.movieRepository
       .createQueryBuilder('movie')
       .leftJoinAndSelect('movie.director', 'director')
@@ -31,8 +30,12 @@ export class MovieService {
       qb.where('movie.title LIKE :title', { title: `%${title}%` });
     }
 
-    const skip = (page - 1) * take;
-    qb.orderBy('movie.id', 'DESC').take(take).skip(skip);
+    if (id) {
+      const direction = order === 'ASC' ? '>' : '<';
+      qb.where(`${qb.alias}.id ${direction} :id`, { id });
+    }
+
+    qb.orderBy(`${qb.alias}.id`, order);
 
     return qb.getManyAndCount();
   }
