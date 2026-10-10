@@ -20,7 +20,7 @@ export class MovieService {
   ) {}
 
   async findAll(dto: GetMoviesDto) {
-    const { order, id, title } = dto;
+    const { cursor, order, take, title } = dto;
     const qb = this.movieRepository
       .createQueryBuilder('movie')
       .leftJoinAndSelect('movie.director', 'director')
@@ -30,12 +30,19 @@ export class MovieService {
       qb.where('movie.title LIKE :title', { title: `%${title}%` });
     }
 
-    if (id) {
-      const direction = order === 'ASC' ? '>' : '<';
-      qb.where(`${qb.alias}.id ${direction} :id`, { id });
+    if (cursor) {
     }
 
-    qb.orderBy(`${qb.alias}.id`, order);
+    // order: ["id_DESC", "likeCount_ASC"]
+    for (let i = 0; i < order.length; i++) {
+      const [column, direction] = order[i].split('_');
+
+      if (i === 0) {
+        qb.orderBy(`${qb.alias}.${column}`, direction as 'ASC' | 'DESC');
+      } else {
+        qb.addOrderBy(`${qb.alias}.${column}`, direction as 'ASC' | 'DESC');
+      }
+    }
 
     return qb.getManyAndCount();
   }

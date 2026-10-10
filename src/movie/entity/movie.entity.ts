@@ -25,6 +25,11 @@ export class Movie extends BaseTable {
   @Column()
   detail: string;
 
+  @Column({
+    default: 0,
+  })
+  likeCount: number;
+
   @ManyToOne(() => Director, (director) => director.id, { nullable: false })
   director: Director;
 }
