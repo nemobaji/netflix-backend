@@ -22,7 +22,7 @@ export class MovieService {
   ) {}
 
   async findAll(dto: GetMoviesDto) {
-    const { cursor, order, take, title } = dto;
+    const { title } = dto;
     const qb = this.movieRepository
       .createQueryBuilder('movie')
       .leftJoinAndSelect('movie.director', 'director')
@@ -30,9 +30,6 @@ export class MovieService {
 
     if (title) {
       qb.where('movie.title LIKE :title', { title: `%${title}%` });
-    }
-
-    if (cursor) {
     }
 
     const nextCursor = await this.commonService.applyCursorPaginationParamsToQb(

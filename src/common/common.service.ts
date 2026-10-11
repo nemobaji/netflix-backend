@@ -8,9 +8,32 @@ export class CommonService {
     qb: SelectQueryBuilder<ObjectLiteral>,
     dto: CursorPaginationDto,
   ) {
-    const { cursor, take, order } = dto;
+    let { cursor, take, order } = dto;
 
     if (cursor) {
+      const decodedCursor = Buffer.from(cursor, 'base64').toString('utf-8');
+      const cursorObject = JSON.parse(decodedCursor);
+      /* return value before base64 encoding
+       *
+       * {
+       *    values: { id: 27 },
+       *    order: ['id_DESC', 'likeCount_ASC']
+       * }
+       *
+       */
+      const { values } = cursorObject;
+      order = cursorObject.order;
+      const columns = Object.keys(values);
+      const comparisonOperator = order.some((o) => o.endsWith('DESC'))
+        ? '<'
+        : '>';
+      const whereConditions = columns.map((c) => `${qb.alias}.${c}`).join(',');
+      const whereParams = columns.map((c) => `:${c}`).join(',');
+
+      qb.where(
+        `(${whereConditions}) ${comparisonOperator} (${whereParams})`,
+        values,
+      );
     }
 
     for (let i = 0; i < order.length; i++) {
