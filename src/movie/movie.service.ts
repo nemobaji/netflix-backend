@@ -7,6 +7,7 @@ import { In, Repository } from 'typeorm';
 import { Director } from '../director/entity/director.entity';
 import { Genre } from '../genre/entity/genre.entity';
 import { GetMoviesDto } from './dto/get-movies.dto';
+import { CommonService } from '../common/common.service';
 
 @Injectable()
 export class MovieService {
@@ -17,6 +18,7 @@ export class MovieService {
     private readonly directorRepository: Repository<Director>,
     @InjectRepository(Genre)
     private readonly genreRepository: Repository<Genre>,
+    private readonly commonService: CommonService,
   ) {}
 
   async findAll(dto: GetMoviesDto) {
@@ -33,18 +35,14 @@ export class MovieService {
     if (cursor) {
     }
 
-    // order: ["id_DESC", "likeCount_ASC"]
-    for (let i = 0; i < order.length; i++) {
-      const [column, direction] = order[i].split('_');
+    const nextCursor = await this.commonService.applyCursorPaginationParamsToQb(
+      qb,
+      dto,
+    );
 
-      if (i === 0) {
-        qb.orderBy(`${qb.alias}.${column}`, direction as 'ASC' | 'DESC');
-      } else {
-        qb.addOrderBy(`${qb.alias}.${column}`, direction as 'ASC' | 'DESC');
-      }
-    }
+    const [data, count] = await qb.getManyAndCount();
 
-    return qb.getManyAndCount();
+    return { data, count, nextCursor };
   }
 
   async findOne(id: number) {
